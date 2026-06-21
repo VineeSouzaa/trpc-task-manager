@@ -1,16 +1,45 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextPlugin from "@next/eslint-plugin-next";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactPlugin from "eslint-plugin-react";
+import hooksPlugin from "eslint-plugin-react-hooks";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+    },
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+      react: reactPlugin,
+      "react-hooks": hooksPlugin,
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      ...reactPlugin.configs["jsx-runtime"].rules,
+      ...hooksPlugin.configs.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+      "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0, maxBOF: 0 }],
+    },
+  },
+  {
+    files: ["**/*.{js,jsx}"],
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": hooksPlugin,
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...reactPlugin.configs["jsx-runtime"].rules,
+      ...hooksPlugin.configs.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+      "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0, maxBOF: 0 }],
+    },
+  },
   {
     ignores: [
       "node_modules/**",

@@ -1,0 +1,19 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.formatOnSave": false,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+  "editor.inlayHints.enabled": "on",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

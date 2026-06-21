@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prepare": "husky",
+    "commit": "cz"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
@@ -21,14 +23,35 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@commitlint/cz-commitlint": "^21.0.2",
     "@eslint/eslintrc": "^3",
+    "@next/eslint-plugin-next": "^16.2.9",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "commitizen": "^4.3.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.19",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
   }
 }
