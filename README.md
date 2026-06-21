@@ -22,12 +22,12 @@ pnpm dev
 
 ## Scripts
 
-| Script        | Description              |
-| ------------- | ------------------------- |
-| `pnpm dev`    | Dev server                |
-| `pnpm build`  | Production build          |
-| `pnpm start`  | Run production build      |
-| `pnpm lint`   | Run ESLint                |
+| Script        | Description                |
+| ------------- | -------------------------- |
+| `pnpm dev`    | Dev server                 |
+| `pnpm build`  | Production build           |
+| `pnpm start`  | Run production build       |
+| `pnpm lint`   | Run ESLint                 |
 | `pnpm commit` | Guided commit (Commitizen) |
 
 ## Structure
@@ -54,3 +54,4 @@ Use `pnpm commit` for a guided prompt, or write the message manually following t
 
 - Data is held in memory and is not persisted across project rebuilds.
 - Data is pre-loaded on server render before being displayed; subsequent updates happen via CSR.
+- Deletion is based on soft delete, which means we don't loose data, just update active property
