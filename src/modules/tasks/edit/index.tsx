@@ -3,23 +3,27 @@
 import { BackButton } from '@/components/back-button';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { TasksEditProps } from '@/modules/tasks/edit/types';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/utils/cn';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { Switch } from 'radix-ui';
 import { useState } from 'react';
-import { TasksCreateProps } from './types';
 
-export function TasksCreate({ ...props }: TasksCreateProps) {
+export function TasksEdit({ id, ...props }: TasksEditProps) {
   const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const { data: task, isLoading } = useQuery(trpc.tasks.get.queryOptions({ id }));
+
+  const [title, setTitle] = useState(task?.title || '');
+  const [description, setDescription] = useState(task?.description || '');
+  const [active, setActive] = useState(task?.active || false);
 
   const { mutate, isPending, error } = useMutation(
-    trpc.tasks.create.mutationOptions({
+    trpc.tasks.edit.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: trpc.tasks.list.queryKey() });
         router.push('/');
@@ -27,20 +31,22 @@ export function TasksCreate({ ...props }: TasksCreateProps) {
     }),
   );
 
+  if (isLoading) {
+    return <p>Loading task...</p>;
+  }
+
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    mutate({ title, description });
+    mutate({ id, title, description });
   };
 
-  if (isPending) {
-    return <p>Creating task...</p>;
-  }
   return (
     <>
       <div className="flex items-center gap-2 pb-4">
         <BackButton />
-        <h1 className="text-2xl font-bold">Create Task</h1>
+        <h1 className="text-2xl font-bold">Edit Task</h1>
       </div>
+
       <form
         {...props}
         className={cn(props.className, 'flex flex-col gap-3 justify-center items-center')}
@@ -66,8 +72,20 @@ export function TasksCreate({ ...props }: TasksCreateProps) {
             error={error?.message}
           />
         </div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <label id="active-label" htmlFor="active" className="Label" style={{ paddingRight: 15 }}>
+            Active
+          </label>
+          <Switch.Root id="active" aria-labelledby="active-label" className="SwitchRoot">
+            <Switch.Thumb
+              className="SwitchThumb"
+              data-state={active ? 'checked' : 'unchecked'}
+              onClick={() => setActive(!active)}
+            />
+          </Switch.Root>
+        </div>
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Adding...' : 'Add'}
+          {isPending ? 'Updating...' : 'Update'}
         </Button>
       </form>
     </>

@@ -69,7 +69,10 @@ export function TasksList(props: ComponentProps<'div'>) {
                 hoveredTask === task.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none',
               )}
             >
-              <PencilIcon className="hover:cursor-pointer text-gray-400 hover:text-gray-200" />
+              <PencilIcon
+                className="hover:cursor-pointer text-gray-400 hover:text-gray-200"
+                onClick={() => router.push(`/task/edition/${task.id}`)}
+              />
               <RadixDialog
                 onConfirm={() => {
                   handleDeleteTask(task.id);
