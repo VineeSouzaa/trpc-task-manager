@@ -3,12 +3,12 @@
 import { BackButton } from '@/components/back-button';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { RadixSwitch } from '@/components/radix/switch';
 import { TasksEditProps } from '@/modules/tasks/edit/types';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/utils/cn';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { Switch } from 'radix-ui';
 import { useState } from 'react';
 
 export function TasksEdit({ id, ...props }: TasksEditProps) {
@@ -76,13 +76,19 @@ export function TasksEdit({ id, ...props }: TasksEditProps) {
           <label id="active-label" htmlFor="active" className="Label" style={{ paddingRight: 15 }}>
             Active
           </label>
-          <Switch.Root id="active" aria-labelledby="active-label" className="SwitchRoot">
+          {/* <Switch.Root id="active" aria-labelledby="active-label" className="SwitchRoot">
             <Switch.Thumb
               className="SwitchThumb"
               data-state={active ? 'checked' : 'unchecked'}
               onClick={() => setActive(!active)}
             />
-          </Switch.Root>
+          </Switch.Root> */}
+          <RadixSwitch
+            id="active"
+            ariaLabelledby="active-label"
+            checked={active}
+            onChange={(checked) => setActive(checked as boolean)}
+          />
         </div>
         <Button type="submit" disabled={isPending}>
           {isPending ? 'Updating...' : 'Update'}

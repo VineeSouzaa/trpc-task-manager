@@ -2,6 +2,7 @@ import { Button } from '@/components/button';
 import { RadixDialogProps } from '@/components/radix/dialog/types';
 import { XIcon } from 'lucide-react';
 import { Dialog } from 'radix-ui';
+import './styles.css';
 
 export function RadixDialog({ dialogTrigger, dialogTitle, dialogDescription, onConfirm }: RadixDialogProps) {
   return (

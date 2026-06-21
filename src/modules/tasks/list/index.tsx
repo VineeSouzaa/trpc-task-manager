@@ -2,6 +2,7 @@
 
 import { ListItem } from '@/components/list-item';
 import { RadixDialog } from '@/components/radix/dialog';
+import { RadixToast } from '@/components/radix/toast';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/utils/cn';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -85,6 +86,7 @@ export function TasksList(props: ComponentProps<'div'>) {
           </div>
         ))}
       </div>
+      <RadixToast />
     </div>
   );
 }
