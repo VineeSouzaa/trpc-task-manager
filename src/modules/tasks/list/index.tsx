@@ -18,13 +18,45 @@ export function TasksList(props: ComponentProps<'div'>) {
 
   const { mutate: deleteTask, isPending: isDeletingTask } = useMutation(
     trpc.tasks.delete.mutationOptions({
+      onMutate: async ({ id }) => {
+        // Cancel any outgoing refetches
+        await queryClient.cancelQueries({ queryKey: trpc.tasks.list.queryKey() });
+        const previous = queryClient.getQueryData(trpc.tasks.list.queryKey());
+
+        // Optimistically update to the new state
+        queryClient.setQueryData(
+          trpc.tasks.list.queryKey(),
+          (old: typeof previous) => old?.filter((task) => task.id !== id) ?? [],
+        );
+
+        return { previous };
+      },
+      onError: (_err, _variables, context) => {
+        queryClient.setQueryData(trpc.tasks.list.queryKey(), context?.previous);
+        setToast({ open: true, title: 'Error deleting task', description: _err.message, variant: 'error' });
+      },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: trpc.tasks.list.queryKey() });
+        setToast({
+          open: true,
+          title: 'Task deleted',
+          description: 'The task was successfully removed.',
+          variant: 'success',
+        });
       },
     }),
   );
 
   const [hoveredTask, setHoveredTask] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    open: boolean;
+    title: string;
+    description?: string;
+    variant?: 'success' | 'error';
+  }>({
+    open: false,
+    title: '',
+  });
 
   const handleAddNewTask = () => {
     router.push('/task/creation');
@@ -33,10 +65,6 @@ export function TasksList(props: ComponentProps<'div'>) {
   const handleDeleteTask = (taskId: string) => {
     deleteTask({ id: taskId });
   };
-
-  if (isDeletingTask) {
-    return <p className="text-sm text-gray-400">Updating task list...</p>;
-  }
 
   return (
     <div {...props} className={cn(props.className, 'flex flex-col gap-3')}>
@@ -50,8 +78,14 @@ export function TasksList(props: ComponentProps<'div'>) {
         </button>
       </div>
       <div className="flex flex-col gap-2 mt-1">
-        {!tasks.length && <p className="text-sm text-gray-400">No tasks yet.</p>}
-        {tasks.length && <p className="text-sm text-gray-400">Hover task to edit or delete</p>}
+        <p className="text-xs text-gray-500">
+          {isDeletingTask
+            ? 'Deleting...'
+            : tasks.length === 0
+              ? 'No tasks yet. Add one above.'
+              : `${tasks.length} task${tasks.length === 1 ? '' : 's'} — hover to edit or delete`}
+        </p>
+
         {tasks.map((task) => (
           <div
             key={task.id}
@@ -86,7 +120,13 @@ export function TasksList(props: ComponentProps<'div'>) {
           </div>
         ))}
       </div>
-      <RadixToast />
+      <RadixToast
+        open={toast.open}
+        onOpenChange={(open) => setToast((prev) => ({ ...prev, open }))}
+        title={toast.title}
+        description={toast.description}
+        variant={toast.variant}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { TRPCReactProvider } from '@/trpc/client';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastProvider } from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,9 +28,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <TRPCReactProvider>
-          <main className="max-w-2xl mx-auto px-4 py-10">
-            {children}
-          </main>
+          <ToastProvider>
+            <main className="max-w-2xl mx-auto px-4 py-10">
+              {children}
+            </main>
+          </ToastProvider>
         </TRPCReactProvider>
       </body>
     </html>

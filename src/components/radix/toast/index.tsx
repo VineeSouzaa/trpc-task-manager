@@ -1,58 +1,22 @@
-import { RadixToastProps } from '@/components/radix/toast/types';
+'use client';
+
+import { cn } from '@/utils/cn';
 import { Toast } from 'radix-ui';
-import * as React from 'react';
-import './styles.css';
+import { RadixToastProps } from './types';
 
-export function RadixToast({ ...props }: RadixToastProps) {
-  const [open, setOpen] = React.useState(false);
-  const [eventDate, setEventDate] = React.useState(new Date());
-  const timerRef = React.useRef(0);
-
-  React.useEffect(() => {
-    return () => clearTimeout(timerRef.current);
-  }, []);
-
+export function RadixToast({ open, onOpenChange, title, description, variant = 'success' }: RadixToastProps) {
   return (
-    <Toast.Provider swipeDirection="right" {...props}>
-      <button
-        className="Button large violet"
-        onClick={() => {
-          setOpen(false);
-          window.clearTimeout(timerRef.current);
-          timerRef.current = window.setTimeout(() => {
-            setEventDate(oneWeekAway(new Date()));
-            setOpen(true);
-          }, 100);
-        }}
-      >
-        Add to calendar
-      </button>
-
-      <Toast.Root className="ToastRoot" open={open} onOpenChange={setOpen}>
-        <Toast.Title className="ToastTitle">Scheduled: Catch up</Toast.Title>
-        <Toast.Description asChild>
-          <time className="ToastDescription" dateTime={eventDate.toISOString()}>
-            {prettyDate(eventDate)}
-          </time>
-        </Toast.Description>
-        <Toast.Action className="ToastAction" asChild altText="Goto schedule to undo">
-          <button className="Button small green">Undo</button>
-        </Toast.Action>
-      </Toast.Root>
-      <Toast.Viewport className="ToastViewport" />
-    </Toast.Provider>
+    <Toast.Root
+      className={cn('ToastRoot', variant === 'error' && 'border-red-800')}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
+      <Toast.Title className={cn('ToastTitle', variant === 'error' && 'text-red-400')}>
+        {title}
+      </Toast.Title>
+      {description && (
+        <Toast.Description className="ToastDescription">{description}</Toast.Description>
+      )}
+    </Toast.Root>
   );
-}
-
-function oneWeekAway(date: Date) {
-  const now = new Date(date);
-  const inOneWeek = now.setDate(now.getDate() + 7);
-  return new Date(inOneWeek);
-}
-
-function prettyDate(date: Date) {
-  return new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'full',
-    timeStyle: 'short',
-  }).format(date);
 }

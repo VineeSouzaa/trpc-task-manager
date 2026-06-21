@@ -1,11 +1,6 @@
 @import '@radix-ui/colors/black-alpha.css';
 @import '@radix-ui/colors/green.css';
 
-/* reset */
-button {
-  all: unset;
-}
-
 .SwitchRoot {
   width: 42px;
   height: 25px;

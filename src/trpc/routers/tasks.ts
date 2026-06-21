@@ -52,12 +52,14 @@ export const tasksRouter = createTRPCRouter({
       }
     }),
   delete: baseProcedure.input(z.object({ id: z.string() })).mutation(({ input }) => {
-    const task = tasks.find((task) => task.id === input.id);
-    if (!task) {
-      logger.error(`Task not found: ${input.id}`);
-      throw TASK_NOT_FOUND_ERROR;
-    }
     try {
+      const task = tasks.find((task) => task.id === input.id);
+
+      if (!task) {
+        logger.error(`Task not found: ${input.id}`);
+        throw TASK_NOT_FOUND_ERROR;
+      }
+
       task.active = false;
       task.updated_at = new Date();
 

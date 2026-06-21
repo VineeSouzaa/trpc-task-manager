@@ -1,3 +1,7 @@
+** pending **
+na listagem, foi necessário adicionar isso pois o cache da lista estava mantendo o estado desatualizado por 1 instante dando um efeito visual estranho para o usuário do item sumir de repente da lista
+https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates
+
 # Task Manager
 
 Task manager built with Next.js + tRPC.
