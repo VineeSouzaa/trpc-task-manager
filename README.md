@@ -49,3 +49,8 @@ Conventional Commits enforced via Husky:
 - `commit-msg` → validates message format (`commitlint`)
 
 Use `pnpm commit` for a guided prompt, or write the message manually following the convention.
+
+## Notes
+
+- Data is held in memory and is not persisted across project rebuilds.
+- Data is pre-loaded on server render before being displayed; subsequent updates happen via CSR.
