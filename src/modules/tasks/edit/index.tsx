@@ -9,6 +9,7 @@ import { TasksEditProps } from '@/modules/tasks/edit/types';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/utils/cn';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { CheckIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -41,11 +42,11 @@ export function TasksEdit({ id, ...props }: TasksEditProps) {
   );
 
   if (isLoading) {
-    return <p>Loading task...</p>;
+    return <p className="text-sm text-gray-500 text-center">Loading task...</p>;
   }
 
   if (!isLoading && !task) {
-    return <p>Task not found</p>;
+    return <p className="text-sm text-gray-500 text-center">Task not found</p>;
   }
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -75,53 +76,70 @@ export function TasksEdit({ id, ...props }: TasksEditProps) {
 
   return (
     <>
-      <div className="flex items-center gap-2 pb-4">
-        <BackButton />
-        <h1 className="text-2xl font-bold">Edit Task</h1>
-      </div>
+      <div className="flex flex-col gap-3 bg-gray-950 rounded-md p-4 border border-gray-800 w-full max-w-md mx-auto">
+        <div className="flex items-center gap-2">
+          <BackButton />
+          <h1 className="text-xl font-semibold">Edit Task</h1>
+        </div>
 
-      <form
-        {...props}
-        className={cn(props.className, 'flex flex-col gap-3 justify-center items-center')}
-        onSubmit={handleSubmit}
-      >
-        <div className="flex gap-2 items-start w-full">
-          <div className="flex flex-col flex-1">
+        <form
+          {...props}
+          className={cn(props.className, 'flex flex-col gap-3 mt-1')}
+          onSubmit={handleSubmit}
+        >
+          <div className="flex flex-col gap-1">
+            <label htmlFor="title" className="text-xs text-gray-500">
+              Title
+            </label>
             <Input
+              id="title"
               name="title"
               type="text"
               placeholder="Task title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               error={titleError}
+              className="w-full"
             />
           </div>
-          <div className="flex flex-col flex-1">
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="description" className="text-xs text-gray-500">
+              Description
+            </label>
             <Input
+              id="description"
               name="description"
               type="text"
               placeholder="Task description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               error={descriptionError}
+              className="w-full"
             />
           </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <label id="active-label" htmlFor="active" className="Label" style={{ paddingRight: 15 }}>
-            Active
-          </label>
-          <RadixSwitch
-            id="active"
-            ariaLabelledby="active-label"
-            checked={active}
-            onChange={(checked) => setActive(checked as boolean)}
-          />
-        </div>
-        <Button type="submit" disabled={isPending}>
-          {isPending ? 'Updating...' : 'Update'}
-        </Button>
-      </form>
+
+          <div className="flex items-center justify-between border border-black rounded px-3 py-2 bg-gray-900">
+            <label id="active-label" htmlFor="active" className="Label">
+              Active
+            </label>
+            <RadixSwitch
+              id="active"
+              ariaLabelledby="active-label"
+              checked={active}
+              onChange={(checked) => setActive(checked as boolean)}
+            />
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="bg-green-950 flex flex-row gap-2 items-center justify-center hover:bg-green-800 hover:cursor-pointer transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <CheckIcon className="w-4 h-4" /> {isPending ? 'Updating...' : 'Update'}
+          </Button>
+        </form>
+      </div>
       <RadixToast open={!!error} onOpenChange={() => {}} title="Error updating task" description={error?.message} />
     </>
   );
