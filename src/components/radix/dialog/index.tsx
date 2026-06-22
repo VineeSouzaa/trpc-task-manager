@@ -4,9 +4,9 @@ import { XIcon } from 'lucide-react';
 import { Dialog } from 'radix-ui';
 import './styles.css';
 
-export function RadixDialog({ dialogTrigger, dialogTitle, dialogDescription, onConfirm }: RadixDialogProps) {
+export function RadixDialog({ dialogTrigger, dialogTitle, dialogDescription, onConfirm, onOpenChange }: RadixDialogProps) {
   return (
-    <Dialog.Root>
+    <Dialog.Root onOpenChange={onOpenChange}>
       <Dialog.Trigger asChild>{dialogTrigger}</Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />

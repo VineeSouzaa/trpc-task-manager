@@ -25,7 +25,7 @@ export function TasksCreate({ ...props }: TasksCreateProps) {
   const { mutate, isPending, error } = useMutation(
     trpc.tasks.create.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: trpc.tasks.list.queryKey() });
+        queryClient.invalidateQueries({ queryKey: trpc.tasks.list.infiniteQueryKey() });
         router.push('/');
       },
     }),

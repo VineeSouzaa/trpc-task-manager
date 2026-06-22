@@ -10,7 +10,26 @@ const logger = pino({
 });
 
 export const tasksRouter = createTRPCRouter({
-  list: baseProcedure.query(() => tasks.filter((task) => task.active)),
+  list: baseProcedure
+    .input(
+      z.object({
+        cursor: z.date().nullish(),
+        limit: z.number().min(1).max(50).default(10),
+      }),
+    )
+    .query(({ input }) => {
+      const { limit, cursor } = input;
+
+      const taskList = tasks
+        .filter((task) => task.active)
+        .filter((task) => task.created_at > (cursor ?? new Date(0)))
+        .slice(0, limit);
+
+      return {
+        tasks: taskList,
+        cursor: taskList.length == limit ? taskList[taskList.length - 1].created_at : undefined,
+      };
+    }),
   get: baseProcedure.input(z.object({ id: z.string() })).query(({ input }) => {
     const task = tasks.find((task) => task.id === input.id);
 
@@ -37,7 +56,6 @@ export const tasksRouter = createTRPCRouter({
           created_at: new Date(),
           updated_at: new Date(),
           active: true,
-          completed: false,
         };
 
         tasks.push(task);
@@ -51,15 +69,16 @@ export const tasksRouter = createTRPCRouter({
         throw TASK_CREATION_ERROR;
       }
     }),
+  //I used soft delete to avoid losing data and be able to recover it if needed in the future.
   delete: baseProcedure.input(z.object({ id: z.string() })).mutation(({ input }) => {
+    const task = tasks.find((task) => task.id === input.id);
+
+    if (!task) {
+      logger.error(`Task not found: ${input.id}`);
+      throw TASK_NOT_FOUND_ERROR;
+    }
+
     try {
-      const task = tasks.find((task) => task.id === input.id);
-
-      if (!task) {
-        logger.error(`Task not found: ${input.id}`);
-        throw TASK_NOT_FOUND_ERROR;
-      }
-
       task.active = false;
       task.updated_at = new Date();
 
@@ -73,18 +92,26 @@ export const tasksRouter = createTRPCRouter({
     }
   }),
   edit: baseProcedure
-    .input(z.object({ id: z.string(), title: z.string().optional(), description: z.string().optional() }))
+    .input(
+      z.object({
+        id: z.string(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        active: z.boolean().optional(),
+      }),
+    )
     .mutation(({ input }) => {
+      const task = tasks.find((task) => task.id === input.id);
+
+      if (!task) {
+        logger.error(`Task not found: ${input.id}`);
+        throw TASK_NOT_FOUND_ERROR;
+      }
+
       try {
-        const task = tasks.find((task) => task.id === input.id);
-
-        if (!task) {
-          logger.error(`Task not found: ${input.id}`);
-          throw TASK_NOT_FOUND_ERROR;
-        }
-
         task.title = input.title || task.title;
         task.description = input.description || task.description;
+        task.active = input.active ?? task.active;
         task.updated_at = new Date();
 
         logger.info(`Task updated: ${input.id}`);

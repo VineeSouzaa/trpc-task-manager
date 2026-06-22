@@ -34,7 +34,7 @@ export function TasksEdit({ id, ...props }: TasksEditProps) {
   const { mutate, isPending, error } = useMutation(
     trpc.tasks.edit.mutationOptions({
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: trpc.tasks.list.queryKey() });
+        queryClient.invalidateQueries({ queryKey: trpc.tasks.list.infiniteQueryKey() });
         router.push('/');
       },
     }),
@@ -42,6 +42,10 @@ export function TasksEdit({ id, ...props }: TasksEditProps) {
 
   if (isLoading) {
     return <p>Loading task...</p>;
+  }
+
+  if (!isLoading && !task) {
+    return <p>Task not found</p>;
   }
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -66,7 +70,7 @@ export function TasksEdit({ id, ...props }: TasksEditProps) {
       setDescriptionError(undefined);
     }
 
-    mutate({ id, title: validated.data.title, description: validated.data.description });
+    mutate({ id, title: validated.data.title, description: validated.data.description, active });
   };
 
   return (

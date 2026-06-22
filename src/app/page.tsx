@@ -4,7 +4,9 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 export default async function Home() {
   const queryClient = getQueryClient();
-  await queryClient.prefetchQuery(trpc.tasks.list.queryOptions());
+  await queryClient.prefetchInfiniteQuery(
+    trpc.tasks.list.infiniteQueryOptions({ limit: 5 }, { getNextPageParam: (lastPage) => lastPage.cursor }),
+  );
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

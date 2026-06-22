@@ -5,5 +5,4 @@ export type Task = {
   created_at: Date;
   updated_at: Date;
   active: boolean;
-  completed: boolean;
 };
