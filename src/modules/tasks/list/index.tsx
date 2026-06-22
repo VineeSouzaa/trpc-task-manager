@@ -112,7 +112,13 @@ export function TasksList(props: ComponentProps<'div'>) {
 
   return (
     <>
-      <div {...props} className={cn(props.className, 'flex flex-col gap-3')}>
+      <div
+        {...props}
+        className={cn(
+          props.className,
+          'flex flex-col gap-3 bg-gray-950 rounded-md p-4 border border-gray-800 w-full max-w-md mx-auto',
+        )}
+      >
         <h1 className="text-xl font-semibold mb-2">Tasks</h1>
         <div className="flex gap-2">
           <button
@@ -131,41 +137,45 @@ export function TasksList(props: ComponentProps<'div'>) {
                 : `${tasks.length} task${tasks.length === 1 ? '' : 's'} — hover to edit or delete`}
           </p>
 
-          {tasks.map((task) => (
-            <div
-              key={task.id}
-              className="flex flex-row"
-              onMouseEnter={() => !dialogOpen && setHoveredTask(task.id)}
-              onMouseLeave={() => !dialogOpen && setHoveredTask(null)}
-            >
-              <ListItem
-                task={task}
-                className={cn(hoveredTask === task.id ? 'w-5/7' : 'w-full', 'transition-all duration-500')}
-              />
-
+          <div className="flex flex-col gap-4 items-center w-full">
+            {tasks.map((task) => (
               <div
-                className={cn(
-                  'w-2/7 p-2 rounded-md flex flex-row gap-2 items-center transition-all duration-500',
-                  hoveredTask === task.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none',
-                )}
+                key={task.id}
+                className="flex flex-row w-full "
+                onMouseEnter={() => !dialogOpen && setHoveredTask(task.id)}
+                onMouseLeave={() => !dialogOpen && setHoveredTask(null)}
               >
-                <PencilIcon
-                  className="hover:cursor-pointer text-gray-400 hover:text-gray-200"
-                  onClick={() => router.push(`/task/edition/${task.id}`)}
-                />
-                <RadixDialog
-                  onConfirm={() => handleDeleteTask(task.id)}
-                  onOpenChange={(open) => {
-                    setDialogOpen(open);
-                    if (open) setHoveredTask(null);
-                  }}
-                  dialogTitle="Delete task"
-                  dialogDescription={`Are you sure you want to delete task "${task.title}"?`}
-                  dialogTrigger={<Trash2Icon className="hover:cursor-pointer text-red-800 hover:text-red-600" />}
-                />
+                <ListItem task={task} className="flex-1 min-w-0 mx-2 shadow-md" />
+
+                <div
+                  className={cn(
+                    ' rounded-md flex flex-row gap-2 items-center shrink-0 overflow-hidden transition-all duration-500',
+                    hoveredTask === task.id
+                      ? 'w-16 opacity-100 translate-x-0'
+                      : 'w-0 opacity-0 translate-x-2 pointer-events-none',
+                  )}
+                >
+                  <PencilIcon
+                    size={18}
+                    className="hover:cursor-pointer text-gray-400 hover:text-gray-200"
+                    onClick={() => router.push(`/task/edition/${task.id}`)}
+                  />
+                  <RadixDialog
+                    onConfirm={() => handleDeleteTask(task.id)}
+                    onOpenChange={(open) => {
+                      setDialogOpen(open);
+                      if (open) setHoveredTask(null);
+                    }}
+                    dialogTitle="Delete task"
+                    dialogDescription={`Are you sure you want to delete task "${task.title}"?`}
+                    dialogTrigger={
+                      <Trash2Icon size={18} className="hover:cursor-pointer text-red-800 hover:text-red-600" />
+                    }
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         <RadixToast
           open={toast.open}
@@ -176,8 +186,8 @@ export function TasksList(props: ComponentProps<'div'>) {
         />
       </div>
       <div ref={infiniteScrollHidedDiveRef} className="min-h-2 py-2">
-        {isFetchingNextPage && <div className="w-full h-10 bg-gray-900 animate-pulse" />}
-        {!hasNextPage && tasks.length > 0 && <p className="text-sm text-gray-500">No more data to load</p>}
+        {isFetchingNextPage && <p className="text-sm text-gray-500 text-center">Loading more tasks...</p>}
+        {!hasNextPage && tasks.length > 0 && <p className="text-sm text-gray-500 text-center">No more data to load</p>}
       </div>
     </>
   );
